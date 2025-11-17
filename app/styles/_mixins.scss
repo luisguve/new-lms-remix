@@ -1,0 +1,279 @@
+/**
+ * A smart hover mixin that only applies hover styles on devices that support hover interactions.
+ * This prevents unwanted hover effects on touch devices and improves user experience.
+ *
+ * Usage:
+ * @include hover {
+ *   background-color: blue;
+ *   color: white;
+ * }
+ *
+ * Benefits:
+ * - Only applies hover styles on desktop devices with mouse/pointer input
+ * - Prevents hover states from "sticking" on touch devices
+ * - Improves performance by not triggering hover effects on mobile
+ * - Only applies on large screens (defined by the 'large' breakpoint)
+ */
+ @mixin hover {
+  @include mq($from: large) {
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        @content;
+      }
+    }
+  }
+}
+
+/**
+ * Truncates text with an ellipsis when it overflows its container.
+ * This mixin supports both single and multi-line text truncation.
+ *
+ * @param {Number} $lines - Number of lines to show before truncating (default: 1)
+ *
+ * Usage for single line:
+ * .my-element {
+ *   width: 100%;  // Set a fixed width
+ *   @include overflow-ellipsis;
+ * }
+ *
+ * Usage for multiple lines:
+ * .my-element {
+ *   width: 100%;
+ *   @include overflow-ellipsis(3);  // Will show 3 lines before truncating
+ * }
+ *
+ * Note:
+ * - The container must have a defined width
+ * - Works for both single and multiple lines
+ * - Creates a clean, professional appearance for overflowing text
+ * - For multiple lines, -webkit-box is used with a fallback to line-clamp
+ */
+@mixin overflow-ellipsis($lines: 1) {
+  @if $lines == 1 {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  } @else {
+    display: -webkit-box;
+    -webkit-line-clamp: $lines;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /* Fallback for browsers that don't support -webkit-line-clamp */
+    @supports not (-webkit-line-clamp: $lines) {
+      display: block;
+      max-height: $lines * 1.2em; /* Approximate line height */
+      position: relative;
+      
+      &::after {
+        content: "...";
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        background: white; /* Should match content background */
+        padding-left: 4px;
+      }
+    }
+  }
+}
+
+/**
+ * A mixin for styling placeholder text across different browsers.
+ * This mixin provides cross-browser compatibility for styling input placeholders,
+ * handling vendor prefixes automatically.
+ *
+ * Usage:
+ * .input-element {
+ *   @include placeholder {
+ *     color: #999;
+ *     font-style: italic;
+ *     font-size: 14px;
+ *   }
+ * }
+ *
+ * Benefits:
+ * - Ensures consistent placeholder styling across all major browsers
+ * - Handles vendor prefixes automatically (Chrome, Firefox, Safari, IE)
+ * - Reduces code duplication for cross-browser placeholder styles
+ * - Makes placeholder styling maintenance easier
+ *
+ * Note:
+ * - The styles defined within the mixin will be applied to the placeholder text only
+ * - Supports all standard CSS properties (color, font-size, font-style, etc.)
+ * - Best practice is to use subtle, accessible colors for placeholder text
+ */
+@mixin placeholder {
+  &::placeholder {
+    @content;
+  }
+  &::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+    @content;
+  }
+  &::-moz-placeholder { /* Firefox 19+ */
+    @content;
+  }
+  &:-ms-input-placeholder { /* IE 10+ */
+    @content;
+  }
+  &:-moz-placeholder { /* Firefox 18- */
+    @content;
+  }
+}
+
+/**
+ * A mixin that hides the scrollbar while maintaining scroll functionality.
+ * This provides a clean, modern interface while still allowing content to be scrollable.
+ *
+ * Usage:
+ * .scrollable-element {
+ *   overflow-y: auto;
+ *   @include hideScroll;
+ * }
+ *
+ * Benefits:
+ * - Creates a cleaner UI by hiding scrollbars
+ * - Maintains scroll functionality
+ * - Cross-browser support (Chrome and Firefox)
+ * - Customizable scrollbar width and appearance
+ */
+@mixin hideScroll() {
+  
+  /* Styles for Chrome */
+  /* Scrollbar width and color */
+  &::-webkit-scrollbar {
+    width: 7px;
+    // background-color: red;
+  }
+  
+  /* Scrollbar track */
+  &::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+  
+  /* Scrollbar thumb (the draggable part) */
+  &::-webkit-scrollbar-thumb {
+    background-color: transparent;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  /* Styles for Firefox */
+  /* Scrollbar width and color */
+  &::-moz-scrollbar {
+    width: 7px;
+    // background-color: #f5f5f5;
+  }
+  
+  /* Scrollbar track */
+  &::-moz-scrollbar-track {
+    background-color: transparent;
+  }
+  
+  /* Scrollbar thumb (the draggable part) */
+  &::-moz-scrollbar-thumb {
+    background-color: transparent;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+}
+
+/**
+ * A mixin that applies standard background image cover properties for responsive images.
+ * This creates a full-coverage background image that maintains its aspect ratio while
+ * filling its container.
+ *
+ * Usage:
+ * .hero-section {
+ *   @include background-image-cover;
+ *   background-image: url('/path/to/image.jpg');
+ * }
+ *
+ * Benefits:
+ * - Creates responsive background images that scale properly
+ * - Ensures image covers entire container without distortion
+ * - Centers the image within its container
+ * - Prevents image repetition
+ */
+@mixin background-image-cover {
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+/**
+ * Creates an infinite background extension effect to the left of an element.
+ * This mixin is useful for creating full-width background sections in a boxed layout
+ * where the background needs to extend beyond the container to the left edge of the viewport.
+ *
+ * @param {Color} $background-color - The color to use for the extended background
+ *
+ * Usage:
+ * .section {
+ *   @include full-width-to-left(#f5f5f5);
+ *   // Your content styles here
+ * }
+ *
+ * Benefits:
+ * - Creates a seamless full-width background effect
+ * - Maintains content width while extending background
+ * - Smooth transition animation for background changes
+ * - Works with any background color
+ *
+ * Note:
+ * - The element must have a relative position context
+ * - Content should be positioned relative to maintain proper z-indexing
+ */
+@mixin full-width-to-left($background-color) {
+  position: relative;
+  z-index: 1;
+  &:before {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 1000%;
+    background-color: $background-color;
+    z-index: 0;
+    transition: all 0.5s;
+  }
+}
+
+/**
+ * Creates an infinite background extension effect to the right of an element.
+ * This mixin is useful for creating full-width background sections in a boxed layout
+ * where the background needs to extend beyond the container to the right edge of the viewport.
+ *
+ * @param {Color} $background-color - The color to use for the extended background
+ *
+ * Usage:
+ * .section {
+ *   @include full-width-to-right(#f5f5f5);
+ *   // Your content styles here
+ * }
+ *
+ * Benefits:
+ * - Creates a seamless full-width background effect
+ * - Maintains content width while extending background
+ * - Smooth transition animation for background changes
+ * - Works with any background color
+ *
+ * Note:
+ * - The element must have a relative position context
+ * - Content should be positioned relative to maintain proper z-indexing
+ */
+@mixin full-width-to-right($background-color) {
+  position: relative;
+  z-index: 1;
+  &:after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 1000%;
+    background-color: $background-color;
+    z-index: 0;
+    transition: all 0.5s;
+  }
+}
+

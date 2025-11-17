@@ -1,5 +1,6 @@
 import type { Route } from "./+types/home";
-import { Welcome } from "../welcome/welcome";
+import type { DynamicData } from "@utils/types";
+import renderComponents from "~/lib/renderComponent";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -8,6 +9,13 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-export default function Home() {
-  return <Welcome />;
+export async function loader() {
+  const res = await fetch(`${process.env.STRAPI_URL}/api/homepage`);
+  const { data }: DynamicData = await res.json();
+
+  return data;
+}
+
+export default function Home({ loaderData }: Route.ComponentProps) {
+  return renderComponents(loaderData.blocks);
 }
