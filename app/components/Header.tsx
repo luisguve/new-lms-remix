@@ -7,6 +7,8 @@ import {
   NavigationMenuItem,
   NavigationMenuLink,
 } from "./ui/navigation-menu";
+import { useUser } from "~/contexts/user-context";
+import { useEffect, useState } from "react";
 
 interface Props {
   logo: Image;
@@ -15,6 +17,9 @@ interface Props {
 
 export default function Header({ logo, links }: Props) {
   const navigate = useNavigate();
+  const { isLoggedIn } = useUser();
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => setIsMounted(true), []);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -53,6 +58,32 @@ export default function Header({ logo, links }: Props) {
                 </NavigationMenuLink>
               </NavigationMenuItem>
             ))}
+            {isMounted && isLoggedIn && (
+              <NavigationMenuItem>
+                <NavigationMenuLink
+                  href="/profile"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate("/profile");
+                  }}
+                >
+                  Profile
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+            )}
+            {isMounted && !isLoggedIn && (
+              <NavigationMenuItem>
+                <NavigationMenuLink
+                  href="/login"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate("/login");
+                  }}
+                >
+                  Login
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+            )}
           </NavigationMenuList>
         </NavigationMenu>
       </div>

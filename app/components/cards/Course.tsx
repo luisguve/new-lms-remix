@@ -10,12 +10,21 @@ import BlockRendererClient from "../BlockRenderer";
 import { Link } from "react-router";
 import type { ICourse } from "~/utils/types";
 import { StrapiImage } from "../StrapiImage";
+import { useUser } from "~/contexts/user-context";
 
 interface CourseProps {
   course?: ICourse;
 }
 
 export function Course({ course }: CourseProps) {
+  const { courses } = useUser();
+  
+  // Check if user has access to this course
+  const courseStudent = course 
+    ? courses.find((cs) => cs.course.slug === course.slug || cs.course.documentId === course.documentId)
+    : null;
+  const hasAccess = !!courseStudent;
+  const currentLecture = courseStudent?.current_lecture;
   if (!course) {
     // Loading state
     return (
@@ -65,15 +74,33 @@ export function Course({ course }: CourseProps) {
         </div>
       </CardContent>
       <CardFooter className="flex items-center justify-between">
-        <Link
-          to={`/courses/${course.slug}`}
-          className="text-foreground flex items-center hover:underline"
-        >
-          View course
-        </Link>
-        <span className="text-lg font-semibold">
-          ${course.price.toFixed(2)}
-        </span>
+        {hasAccess && currentLecture ? (
+          <Link
+            to={`/courses/${course.slug}/${currentLecture.slug}`}
+            className="text-foreground flex items-center hover:underline"
+          >
+            Continue course
+          </Link>
+        ) : hasAccess ? (
+          <Link
+            to={`/courses/${course.slug}`}
+            className="text-foreground flex items-center hover:underline"
+          >
+            Start course
+          </Link>
+        ) : (
+          <Link
+            to={`/courses/${course.slug}`}
+            className="text-foreground flex items-center hover:underline"
+          >
+            View course
+          </Link>
+        )}
+        {!hasAccess && (
+          <span className="text-lg font-semibold">
+            ${course.price.toFixed(2)}
+          </span>
+        )}
       </CardFooter>
     </Card>
   );

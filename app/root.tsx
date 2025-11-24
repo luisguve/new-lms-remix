@@ -13,6 +13,7 @@ import type { Route } from "./+types/root";
 import "./styles/index.scss";
 import "./app.css";
 import { useEffect } from "react";
+import { UserProvider } from "./contexts/user-context";
 
 const queryClient = new QueryClient();
 
@@ -62,10 +63,12 @@ export default function App() {
   }, []);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <Outlet />
-      <TanStackDevtools />
-    </QueryClientProvider>
+    <UserProvider>
+      <QueryClientProvider client={queryClient}>
+        <Outlet />
+        <TanStackDevtools />
+      </QueryClientProvider>
+    </UserProvider>
   );
 }
 

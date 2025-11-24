@@ -120,3 +120,13 @@ export interface DynamicData {
     blocks: Component[];
   };
 }
+
+// Alias for Lecture to match user-context expectations
+export type ILecture = Lecture;
+
+// Course Student interface for tracking user course progress
+export interface ICourseStudent {
+  course: ICourse;
+  current_lecture: ILecture | null;
+  lectures_completed: ILecture[];
+}
