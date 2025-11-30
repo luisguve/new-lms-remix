@@ -19,6 +19,7 @@ export default function CoursePage(props: CoursePageProps) {
     total_students,
     language,
     publishedAt,
+    thumbnail,
     instructor,
   } = props;
 
@@ -35,6 +36,7 @@ export default function CoursePage(props: CoursePageProps) {
             <TabsContent value="overview" className="mt-10 lg:mt-[50px]">
               {description && (
                 <OverviewPanel
+                  thumbnail={thumbnail}
                   description={description}
                   long_description={long_description}
                 />
