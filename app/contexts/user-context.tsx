@@ -196,6 +196,10 @@ export const UserProvider = ({ children }: TProps) => {
         errorMsg = strapiErrorMsg;
       }
       console.log(errorMsg);
+      // If fetching courses fails (for example due to invalid token), log the user out
+      dispatch({
+        type: "LOGOUT",
+      });
     }
   };
 
